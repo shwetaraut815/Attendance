@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Attendance Reports</h2>
+<div class="card mb-4">
+    <div class="card-header">
+        Filter Options
+    </div>
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label for="department" class="form-label">Department</label>
+                <select class="form-select" id="department" name="department">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept }}" {% if request.args.get('department') == dept %}selected{% endif %}>{{ dept }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request.args.get('start_date', '') }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request.args.get('end_date', '') }}">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">Filter</button>
+                <a href="{{ url_for('main.reports') }}" class="btn btn-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Attendance Records</span>
+        <button class="btn btn-sm btn-success" id="exportBtn">Export to CSV</button>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped" id="reportTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance %}
+                <tr>
+                    <td>{{ record.date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ record.employee.name }}</td>
+                    <td>{{ record.employee.department }}</td>
+                    <td>{{ record.check_in.strftime('%H:%M:%S') }}</td>
+                    <td>{{ record.check_out.strftime('%H:%M:%S') if record.check_out else 'Not checked out' }}</td>
+                    <td>
+                        {% if record.check_out %}
+                        {% set duration = (record.check_out - record.check_in).total_seconds() // 60 %}
+                        {{ duration }} min
+                        {% else %}
+                        In progress
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.getElementById('exportBtn').addEventListener('click', function() {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    const table = document.getElementById('reportTable');
+    const rows = table.querySelectorAll('tr');
+    
+    rows.forEach(function(row) {
+        const rowData = [];
+        const cols = row.querySelectorAll('td, th');
+        
+        cols.forEach(function(col) {
+            rowData.push('"' + col.innerText.replace(/"/g, '""') + '"');
+        });
+        
+        csvContent += rowData.join(',') + '\r\n';
+    });
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'attendance_report.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
+</script>
+{% endblock %}

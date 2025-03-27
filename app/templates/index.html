@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to Attendance Management System</h1>
+    <p class="lead">Track employee attendance, generate reports, and manage your organization more effectively.</p>
+    <hr class="my-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Manage Employees</h5>
+                    <p class="card-text">Add, update, and manage employee information.</p>
+                    <a href="{{ url_for('main.employees') }}" class="btn btn-primary">Go to Employees</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Track Attendance</h5>
+                    <p class="card-text">Record daily check-in and check-out of employees.</p>
+                    <a href="{{ url_for('main.attendance') }}" class="btn btn-primary">Go to Attendance</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Generate Reports</h5>
+                    <p class="card-text">View and export attendance reports by date, department, etc.</p>
+                    <a href="{{ url_for('main.reports') }}" class="btn btn-primary">Go to Reports</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
