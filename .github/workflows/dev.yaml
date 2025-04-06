@@ -39,13 +39,13 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-terraform-deploy:
- needs: build-and-run
- runs-on: ubuntu-latest
- defaults:
-  run:
-   working-dir: ./terrraform
- steps:
+ deploy:
+  needs: build-and-run
+  runs-on: ubuntu-latest
+  defaults:
+   run:
+     working-dir: ./terrraform
+  steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
