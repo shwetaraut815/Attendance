@@ -86,7 +86,7 @@ name: dev_deploy
 on:
   push:
     branches: 
-     - master
+     - main
   workflow_dispatch:
 
 jobs:
@@ -94,15 +94,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout code
-        uses: actions/checkout@v3
+      # - name: checkout code
+      #   uses: actions/checkout@v3
+      
 
-      - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      # - name: Configure aws credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
+       
+
+      - name: login to DockerHub
+        uses: docker/login-actions@v3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+            username: secrets.DockerUsername
+            password: secrets.DockerPassword
+
+
+
+        
+
 
       - name: Login to ecr
         id: login-ecr
@@ -112,7 +125,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: attendance
+          ECR_REPOSITORY: attendance-app
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -158,4 +171,4 @@ jobs:
         
       - name: Terraform Apply
         # if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        run: terraform apply -auto-approve
+        run: terraform destroy -auto-approve
