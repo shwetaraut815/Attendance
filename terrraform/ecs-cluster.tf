@@ -46,7 +46,7 @@ resource "aws_ecs_task_definition" "red" {
   container_definitions = jsonencode([
     {
       name      = "red-target"
-      image = "${data.aws_ecr_repository.attendance-app.repository_url}@${data.aws_ecr_image.latest.image_digest}"
+      image = "${data.aws_ecr_repository.attendance.repository_url}@${data.aws_ecr_image.latest.image_digest}"
 
       cpu       = var.cpu
       memory    = var.memory
