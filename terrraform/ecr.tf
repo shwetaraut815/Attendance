@@ -1,4 +1,4 @@
-data "aws_ecr_repository" "attendance {
+data "aws_ecr_repository" "attendance" {
   name = "attendance"
 
 }
